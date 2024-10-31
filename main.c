@@ -1,59 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "filme.h"
 #include "cinema.h"
 
-int main(){
-    Usuario * listaUsuario = NULL;
-    const char* nomeArquivo = "pedidos.txt";
+int main() {
+    Filme* listaFilmes = NULL;
+    Usuario* listaUsuario = NULL;
+    const char *nomeArquivoFilmes = "filmes.txt";
+    const char *nomeArquivoUsuarios = "usuarios.txt";
+    int opcaoGeral, opcaoFilme, opcaoUsuario, id;
 
-    carregarPedidosDoArquivo(&listaUsuario, nomeArquivo);
+    carregarFilmesDoArquivo(&listaFilmes, nomeArquivoFilmes);
+    carregarUsuariosDoArquivo(&listaUsuario, nomeArquivoUsuarios);
 
-    int quantidadePaginas, opcao, numeroPedido = 1;
-    char nome[50], tipoSolicitante[20], status[15];
+    do {
+        printf("\n--- Sistema de Gerenciamento ---\n");
+        printf("1. Gerenciar Filmes\n");
+        printf("2. Gerenciar Usuários\n");
+        printf("0. Sair\n");
 
-    do{
-        printf("\n----- | Menu de Pedidos | -----\n\n");
-        printf("1. Adicionar pedido\n");
-        printf("2. Listar pedidos\n");
-        printf("3. Excluir pedido\n");
-        printf("4. Editar pedido\n");
-        printf("5. Buscar pedido por número ou nome\n");
-        printf("6. Consultar pedidos por status\n");
-        printf("7. Consultar total de cópias e valor arrecadado\n");
-        printf("8. Sair\n\n");
+        opcaoGeral = obterOpcaoMenu();
 
-        opcao = obterOpcaoMenu();
-
-        switch(opcao){
+        switch (opcaoGeral) {
             case 1:
-                adicionarPedido(&listaUsuario);
-                salvarPedidoNoArquivo(listaUsuario, nomeArquivo);
+                do {
+                    printf("\nGerenciamento de Filmes\n");
+                    printf("1. Adicionar Filme\n");
+                    printf("2. Exibir Filmes\n");
+                    printf("3. Excluir Filme\n");
+                    printf("4. Editar Filme\n");
+                    printf("0. Voltar\n");
+
+                    opcaoFilme = obterOpcaoMenu();
+
+                    switch (opcaoFilme) {
+                        case 1:
+                            adicionarFilme(&listaFilmes);
+                            salvarFilmesNoArquivo(listaFilmes, nomeArquivoFilmes);
+                            break;
+                        case 2:
+                            exibirFilmes(listaFilmes);
+                            break;
+                        case 3:
+                            printf("Digite o ID do filme que deseja excluir: ");
+                            scanf("%d", &id);
+                            getchar();
+                            excluirFilme(&listaFilmes, id);
+                            salvarFilmesNoArquivo(listaFilmes, nomeArquivoFilmes);
+                            break;
+                        case 4:
+                            printf("Digite o ID do filme que deseja editar: ");
+                            scanf("%d", &id);
+                            getchar();
+                            editarFilme(listaFilmes, id);
+                            salvarFilmesNoArquivo(listaFilmes, nomeArquivoFilmes);
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            printf("Opção inválida!\n");
+                    }
+                } while (opcaoFilme != 0);
                 break;
+
             case 2:
-                exibirPedidos(listaUsuario);
+                do {
+                    printf("\nCadastramento de Usuários\n");
+                    printf("1. Cadastrar usuário\n");
+                    printf("2. Listar usuários\n");
+                    printf("0. Voltar\n");
+
+                    opcaoUsuario = obterOpcaoMenu();
+
+                    switch (opcaoUsuario) {
+                        case 1:
+                            cadastrarUsuario(&listaUsuario);
+                            salvarUsuarioNoArquivo(listaUsuario, nomeArquivoUsuarios);
+                            break;
+                        case 2:
+                            exibirUsuarios(listaUsuario);
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            printf("Opção inválida!\n");
+                    }
+                } while (opcaoUsuario != 0);
                 break;
-            case 3:
-                excluirPedido(&listaUsuario);
-                salvarPedidoNoArquivo(listaUsuario, nomeArquivo);
-                break;
-            case 4: 
-                editarPedido(listaUsuario);
-                salvarPedidoNoArquivo(listaUsuario, nomeArquivo);
-                break;
-            case 5:
-                buscarPedido(listaUsuario);
-                break;
-            case 6: 
-                consultarPedidoPorStatus(listaUsuario);
-                break;
-            case 7:
-                consultarTotalCopiasValor(listaUsuario);
-                break;
-            case 8:
-                salvarPedidoNoArquivo(listaUsuario, nomeArquivo);
+
+            case 0:
                 printf("Saindo...\n");
+                salvarFilmesNoArquivo(listaFilmes, nomeArquivoFilmes);
+                salvarUsuarioNoArquivo(listaUsuario, nomeArquivoUsuarios);
                 break;
+
             default:
                 printf("Opção inválida!\n");
         }
-    }while(opcao != 8);
+    } while (opcaoGeral != 0);
+
     return 0;
 }
